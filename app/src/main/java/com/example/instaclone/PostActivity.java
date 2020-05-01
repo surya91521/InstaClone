@@ -39,6 +39,8 @@ import com.theartofdev.edmodo.cropper.CropImage;
 
 import java.util.HashMap;
 
+import static android.icu.text.DateTimePatternGenerator.PatternInfo.OK;
+
 public class PostActivity extends AppCompatActivity {
 
     Uri imageUrl;
@@ -103,7 +105,7 @@ public class PostActivity extends AppCompatActivity {
 
         if(imageUrl != null)
         {
-            final StorageReference filereference = storageReference.child(System.currentTimeMillis()+" "+getFileExtension(imageUrl));
+            final StorageReference filereference = storageReference.child(System.currentTimeMillis()+"."+getFileExtension(imageUrl));
 
             uploadTask = filereference.putFile(imageUrl);
             uploadTask.continueWithTask(new Continuation() {
@@ -149,6 +151,7 @@ public class PostActivity extends AppCompatActivity {
             });
         }else{
             Toast.makeText(this,"No image",Toast.LENGTH_SHORT).show();
+            progressDialog.dismiss();
         }
     }
 
@@ -159,10 +162,12 @@ public class PostActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if(requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE && requestCode==RESULT_OK){
+        if(requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE ){
 
-            CropImage.ActivityResult result = CropImage.getActivityResult(data);
-            imageUrl =result.getUri();
+          if(requestCode==RESULT_OK) {
+              CropImage.ActivityResult result = CropImage.getActivityResult(data);
+              imageUrl = result.getUri();
+          }
 
 
         }else{
